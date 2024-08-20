@@ -2,6 +2,7 @@ package generic
 
 import (
 	"context"
+	"time"
 
 	"github.com/rs/zerolog"
 	"google.golang.org/grpc"
@@ -9,6 +10,10 @@ import (
 )
 
 var _ v1beta1.DevicePluginServer = &DevicePlugin{}
+
+var (
+	readyTimeoutDuration = 10 * time.Second
+)
 
 type DevicePlugin struct {
 	gserver   *grpc.Server
@@ -33,15 +38,33 @@ func NewPlugin(pluginDir, socket string, log *zerolog.Logger) *DevicePlugin {
 }
 
 func (p *DevicePlugin) Run(ctx context.Context) error {
-	errCh := make(chan error)
+	grpcErr := make(chan error)
+	if err := p.startGRPC(ctx, grpcErr); err != nil {
+		return err
+	}
+
+	for err := range grpcErr {
+		return err
+	}
+
+	return nil
+}
+
+func (p *DevicePlugin) startGRPC(ctx context.Context, errCh chan<- error) error {
+	ready, cancel := context.WithTimeout(ctx, readyTimeoutDuration)
+	defer func() {
+		close(errCh)
+		cancel()
+	}()
+
 	go func() {
 		errCh <- p.serve()
 	}()
 
 	go func() {
 		<-ctx.Done()
-		p.gserver.GracefulStop()
+		p.gracefulStop()
 	}()
 
-	return <-errCh
+	return p.grpcReady(ready)
 }

@@ -33,7 +33,10 @@ func main() {
 
 	if err := plugin.Run(ctx); err != nil {
 		log.Error().Err(err).Send()
+		return
 	}
+
+	log.Info().Msg("shutdown completed successfully")
 }
 
 func logger() *zerolog.Logger {
