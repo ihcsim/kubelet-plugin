@@ -9,17 +9,15 @@ import (
 
 	"github.com/ihcsim/kubelet-plugin/pkg/plugins/generic"
 	"github.com/rs/zerolog"
+	"k8s.io/kubelet/pkg/apis/deviceplugin/v1beta1"
 )
 
-const (
-	pluginDir = "/var/lib/kubelet/device-plugins/"
-	socket    = "github.com.ihcsim.kubelet-plugin.generic.sock"
-)
+var socket = v1beta1.DevicePluginPath + "generic.sock"
 
 func main() {
 	var (
 		log         = logger()
-		plugin      = generic.NewPlugin(pluginDir, socket, log)
+		plugin      = generic.NewPlugin(socket, log)
 		ctx, cancel = context.WithCancel(context.Background())
 	)
 
