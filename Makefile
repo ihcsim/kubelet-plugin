@@ -25,10 +25,11 @@ kubelet:
 		--hostname-override localhost \
 		--v=4 2>&1 | tee kubelet/kubelet.log
 
-pflex-devices:
-	sudo mknod -m 666 /dev/pflex0 b 11 0
-	sudo mknod -m 666 /dev/pflex1 b 11 0
-	sudo mknod -m 666 /dev/pflex2 b 11 0
-
-purge:
-	sudo rm /dev/fifo0 /dev/fifo1 /dev/fifo2
+.PHONY: cdi
+cdi:
+	sudo mkdir -p /etc/cdi
+	sudo cp cdi/pflex.yaml /etc/cdi/pflex.yaml
+	sudo rm -rf /dev/pflex*
+	sudo mknod -m 666 /dev/pflex0 b 25 25
+	sudo mknod -m 666 /dev/pflex1 b 25 25
+	sudo mknod -m 666 /dev/pflex2 b 25 25

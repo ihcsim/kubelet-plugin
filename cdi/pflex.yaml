@@ -1,0 +1,50 @@
+cdiVersion: 0.8.0
+kind: isim.dev/pflex
+devices:
+- name: pflex0
+  containerEdits:
+    env:
+    - CDI_DEVICE_NAME=pflex0
+    deviceNodes:
+    - path: /dev/sdg0
+      hostPath: /dev/pflex0
+      type: block
+      major: 25
+      minor: 25
+      permissions: "rw"
+      uid: 5000
+      gid: 5000
+- name: pflex1
+  containerEdits:
+    env:
+    - CDI_DEVICE_NAME=pflex1
+    deviceNodes:
+    - path: /dev/sdg1
+      hostPath: /dev/pflex1
+      type: block
+      major: 25
+      minor: 25
+      permissions: "rw"
+      uid: 5000
+      gid: 5000
+- name: pflex2
+  containerEdits:
+    env:
+    - CDI_DEVICE_NAME=pflex2
+    deviceNodes:
+    - path: /dev/sdg2
+      hostPath: /dev/pflex2
+      type: block
+      major: 25
+      minor: 25
+      permissions: "rw"
+      uid: 5000
+      gid: 5000
+containerEdits:
+  env:
+  - CDI_PROVIDER=isim.dev
+  mounts:
+  - hostPath: /tmp/data
+    containerPath: /tmp/data
+    type: tmpfs
+    options: ["nosuid","strictatime","mode=755","size=65536k"]
