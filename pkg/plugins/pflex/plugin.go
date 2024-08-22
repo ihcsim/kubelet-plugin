@@ -1,4 +1,4 @@
-package generic
+package pflex
 
 import (
 	"context"
@@ -12,6 +12,11 @@ import (
 	"k8s.io/kubelet/pkg/apis/deviceplugin/v1beta1"
 )
 
+const (
+	socket       = "pflex.sock"
+	resourceName = "pflex.io/block"
+)
+
 var (
 	_ v1beta1.DevicePluginServer = &DevicePlugin{}
 
@@ -21,15 +26,13 @@ var (
 type DevicePlugin struct {
 	gserver *grpc.Server
 	log     *zerolog.Logger
-	socket  string
 }
 
-func NewPlugin(socket string, log *zerolog.Logger) *DevicePlugin {
+func NewPlugin(log *zerolog.Logger) *DevicePlugin {
 	gserver := grpc.NewServer()
 	plugin := &DevicePlugin{
 		gserver: gserver,
 		log:     log,
-		socket:  socket,
 	}
 
 	v1beta1.RegisterDevicePluginServer(gserver, plugin)
@@ -49,7 +52,7 @@ func (p *DevicePlugin) Run(ctx context.Context) error {
 		}
 	}()
 
-	p.log.Info().Str("addr", p.socket).Msg("starting grpc server1")
+	p.log.Info().Str("addr", socket).Msg("starting grpc server")
 	p.grpcStartServe(ctx, errCh)
 
 	ready, cancel := context.WithTimeout(ctx, readyTimeoutDuration)
@@ -57,17 +60,19 @@ func (p *DevicePlugin) Run(ctx context.Context) error {
 	if err := p.grpcReady(ready); err != nil {
 		return err
 	}
-	p.log.Info().Str("addr", p.socket).Msg("grpc server ready")
+	p.log.Info().Str("addr", socket).Msg("grpc server ready")
 
+	p.log.Info().Str("addr", socket).Msg("registering with kubelet")
 	kubeletAddr := fmt.Sprintf("unix://%s", v1beta1.KubeletSocket)
-	if err := p.registerKubelet(kubeletAddr); err != nil {
+	if err := p.registerKubelet(ctx, kubeletAddr); err != nil {
 		return err
 	}
+	p.log.Info().Str("addr", socket).Msg("registration completed successfully")
 
 	return errs
 }
 
-func (p *DevicePlugin) registerKubelet(addr string) error {
+func (p *DevicePlugin) registerKubelet(ctx context.Context, addr string) error {
 	conn, err := grpc.NewClient(addr, grpc.WithTransportCredentials(insecure.NewCredentials()))
 	if err != nil {
 		return err
@@ -77,11 +82,11 @@ func (p *DevicePlugin) registerKubelet(addr string) error {
 	client := v1beta1.NewRegistrationClient(conn)
 	request := &v1beta1.RegisterRequest{
 		Version:      v1beta1.Version,
-		Endpoint:     p.socket,
-		ResourceName: "generic",
+		Endpoint:     socket,
+		ResourceName: resourceName,
 	}
 
-	if _, err := client.Register(context.Background(), request); err != nil {
+	if _, err := client.Register(ctx, request); err != nil {
 		return err
 	}
 

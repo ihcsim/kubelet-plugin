@@ -1,4 +1,4 @@
-package generic
+package pflex
 
 import (
 	"context"

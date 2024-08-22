@@ -1,4 +1,4 @@
-package generic
+package pflex
 
 import (
 	"context"
@@ -10,7 +10,7 @@ var serverNotReadyWithinTimeout = fmt.Errorf("server not ready within timeout")
 
 func (p *DevicePlugin) grpcStartServe(ctx context.Context, errCh chan<- error) {
 	go func() {
-		l, err := net.Listen("unix", p.socket)
+		l, err := net.Listen("unix", socket)
 		if err != nil {
 			errCh <- err
 			return

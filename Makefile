@@ -15,7 +15,7 @@ tidy:
 .PHONY: kubelet
 kubelet:
 	if [ ! -e kubelet/kubelet-v1.31.0 ]; then \
-		tar -xzvf kubelet/kubelet-v1.31.0.tar.gz ;\
+		tar -xzvf kubelet/kubelet-v1.31.0.tar.gz -C kubelet ;\
 	fi ;\
 	sudo kubelet/kubelet-v1.31.0 \
 		--config=kubelet/kubelet.yaml \

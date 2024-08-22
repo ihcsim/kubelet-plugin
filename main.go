@@ -7,17 +7,14 @@ import (
 	"syscall"
 	"time"
 
-	"github.com/ihcsim/kubelet-plugin/pkg/plugins/generic"
+	"github.com/ihcsim/kubelet-plugin/pkg/plugins/pflex"
 	"github.com/rs/zerolog"
-	"k8s.io/kubelet/pkg/apis/deviceplugin/v1beta1"
 )
-
-var socket = v1beta1.DevicePluginPath + "generic.sock"
 
 func main() {
 	var (
 		log         = logger()
-		plugin      = generic.NewPlugin(socket, log)
+		plugin      = pflex.NewPlugin(log)
 		ctx, cancel = context.WithCancel(context.Background())
 	)
 
