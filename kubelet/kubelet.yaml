@@ -1,0 +1,15 @@
+apiVersion: kubelet.config.k8s.io/v1beta1
+kind: KubeletConfiguration
+enableServer: false
+registerNode: false
+readOnlyPort: 10250
+failSwapOn: false
+containerRuntimeEndpoint: unix:///run/containerd/containerd.sock
+podCIDR: 10.0.0.0/24
+authentication:
+  anonymous:
+    enabled: true
+  webhook:
+    enabled: false
+authorization:
+  mode: AlwaysAllow

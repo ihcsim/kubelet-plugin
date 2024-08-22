@@ -12,10 +12,20 @@ lint: tidy
 tidy:
 	go mod tidy
 
-devices:
-	mknod -m 666 /dev/fifo0 p
-	mknod -m 666 /dev/fifo1 p
-	mknod -m 666 /dev/fifo2 p
+.PHONY: kubelet
+kubelet:
+	if [ ! -e kubelet/kubelet-v1.31.0 ]; then \
+		tar -xzvf kubelet/kubelet-v1.31.0.tar.gz ;\
+	fi ;\
+	sudo kubelet/kubelet-v1.31.0 \
+		--config=kubelet/kubelet.yaml \
+		--hostname-override localhost \
+		--v=4 2>&1 | tee kubelet/kubelet.log
+
+pflex-devices:
+	sudo mknod -m 666 /dev/pflex0 b 11 0
+	sudo mknod -m 666 /dev/pflex1 b 11 0
+	sudo mknod -m 666 /dev/pflex2 b 11 0
 
 purge:
-	rm /dev/fifo0 /dev/fifo1 /dev/fifo2
+	sudo rm /dev/fifo0 /dev/fifo1 /dev/fifo2
