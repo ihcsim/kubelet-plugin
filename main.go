@@ -2,6 +2,7 @@ package main
 
 import (
 	"context"
+	"errors"
 	"os"
 	"os/signal"
 	"syscall"
@@ -27,10 +28,11 @@ func main() {
 	}()
 
 	if err := plugin.Run(ctx); err != nil {
-		log.Error().Err(err).Send()
-		return
+		if !errors.Is(ctx.Err(), context.Canceled) {
+			log.Error().Err(err).Send()
+			return
+		}
 	}
-
 	log.Info().Msg("shutdown completed successfully")
 }
 
