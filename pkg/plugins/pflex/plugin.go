@@ -2,9 +2,7 @@ package pflex
 
 import (
 	"context"
-	"errors"
 	"fmt"
-	"time"
 
 	"github.com/rs/zerolog"
 	"google.golang.org/grpc"
@@ -20,8 +18,7 @@ const (
 var (
 	_ v1beta1.DevicePluginServer = &DevicePlugin{}
 
-	readyTimeoutDuration = 10 * time.Second
-	socketPath           = v1beta1.DevicePluginPath + socketName
+	socketPath = v1beta1.DevicePluginPath + socketName
 )
 
 type DevicePlugin struct {
@@ -37,26 +34,16 @@ func NewPlugin(log *zerolog.Logger) *DevicePlugin {
 	}
 
 	v1beta1.RegisterDevicePluginServer(gserver, plugin)
-
 	return plugin
 }
 
 func (p *DevicePlugin) Run(ctx context.Context) error {
-	var (
-		errCh = make(chan error)
-		errs  error
-	)
-
-	go func() {
-		for err := range errCh {
-			errs = errors.Join(errs, err)
-		}
-	}()
-
 	p.log.Info().Str("addr", socketPath).Msg("starting grpc server")
-	p.grpcStartServe(ctx, errCh)
+	if err := p.grpcServe(ctx); err != nil {
+		return err
+	}
 
-	ready, cancel := context.WithTimeout(ctx, readyTimeoutDuration)
+	ready, cancel := context.WithTimeout(ctx, grpcReadyTimeoutDuration)
 	defer cancel()
 	if err := p.grpcReady(ready); err != nil {
 		return err
@@ -70,7 +57,7 @@ func (p *DevicePlugin) Run(ctx context.Context) error {
 	}
 	p.log.Info().Str("addr", socketPath).Msg("registration completed successfully")
 
-	return errs
+	return nil
 }
 
 func (p *DevicePlugin) registerKubelet(ctx context.Context, addr string) error {

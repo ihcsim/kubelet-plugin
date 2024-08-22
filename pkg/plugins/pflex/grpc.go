@@ -2,30 +2,33 @@ package pflex
 
 import (
 	"context"
-	"fmt"
+	"errors"
 	"net"
+	"time"
 )
 
-var serverNotReadyWithinTimeout = fmt.Errorf("server not ready within timeout")
+var grpcReadyTimeoutDuration = 600 * time.Second
 
-func (p *DevicePlugin) grpcStartServe(ctx context.Context, errCh chan<- error) {
-	go func() {
-		l, err := net.Listen("unix", socketPath)
-		if err != nil {
-			errCh <- err
-			return
-		}
+func (p *DevicePlugin) grpcServe(ctx context.Context) error {
+	l, err := net.Listen("unix", socketPath)
+	if err != nil {
+		return err
+	}
 
-		p.grpcRegisterStop(ctx)
-		errCh <- p.gserver.Serve(l)
-	}()
-}
-
-func (p *DevicePlugin) grpcRegisterStop(ctx context.Context) {
 	go func() {
 		<-ctx.Done()
 		p.gserver.GracefulStop()
 	}()
+
+	go func() {
+		defer l.Close()
+		if err := p.gserver.Serve(l); err != nil {
+			p.log.Err(err).Msg("grpc server return non-nil error")
+			return
+		}
+	}()
+
+	return nil
 }
 
 func (p *DevicePlugin) grpcReady(ctx context.Context) error {
@@ -33,12 +36,14 @@ LOOP:
 	for {
 		select {
 		case <-ctx.Done():
-			return serverNotReadyWithinTimeout
-		default:
-			if p.gserver.GetServiceInfo() == nil {
-				continue
+			if !errors.Is(ctx.Err(), context.Canceled) {
+				return ctx.Err()
 			}
-			break LOOP
+		default:
+			if p.gserver.GetServiceInfo() != nil {
+				break LOOP
+			}
+			continue
 		}
 	}
 

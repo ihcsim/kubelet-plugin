@@ -33,6 +33,8 @@ func main() {
 			return
 		}
 	}
+
+	<-ctx.Done()
 	log.Info().Msg("shutdown completed successfully")
 }
 
