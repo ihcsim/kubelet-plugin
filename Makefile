@@ -12,6 +12,9 @@ lint: tidy
 tidy:
 	go mod tidy
 
+run: build
+	sudo ./bin/device-plugin
+
 .PHONY: kubelet
 kubelet:
 	if [ ! -e kubelet/kubelet-v1.31.0 ]; then \
