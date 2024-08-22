@@ -35,6 +35,7 @@ func NewPlugin(log *zerolog.Logger) *DevicePlugin {
 		gserver: gserver,
 		log:     log,
 	}
+	v1beta1.RegisterDevicePluginServer(gserver, plugin)
 
 	plugin.log.Info().Msg("plugin initialized")
 	return plugin
@@ -130,9 +131,6 @@ func (p *DevicePlugin) restartHandler(ctx context.Context, kubeletAddr string, e
 
 				if event.Name == socketPath && event.Has(fsnotify.Remove) {
 					p.log.Info().Msg("kubelet restarted, re-registering plugin with kubelet")
-					p.gserver.Stop()
-					p.gserver = grpc.NewServer()
-
 					if err := p.grpcServe(ctx, errCh); err != nil {
 						errCh <- err
 						break LOOP
