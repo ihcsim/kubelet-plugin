@@ -3,6 +3,7 @@ module github.com/ihcsim/kubelet-plugin
 go 1.22.0
 
 require (
+	github.com/fsnotify/fsnotify v1.7.0
 	github.com/rs/zerolog v1.33.0
 	google.golang.org/grpc v1.65.0
 	k8s.io/kubelet v0.31.0

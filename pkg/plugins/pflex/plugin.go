@@ -2,8 +2,11 @@ package pflex
 
 import (
 	"context"
+	"errors"
 	"fmt"
+	"time"
 
+	"github.com/fsnotify/fsnotify"
 	"github.com/rs/zerolog"
 	"google.golang.org/grpc"
 	"google.golang.org/grpc/credentials/insecure"
@@ -33,13 +36,28 @@ func NewPlugin(log *zerolog.Logger) *DevicePlugin {
 		log:     log,
 	}
 
-	v1beta1.RegisterDevicePluginServer(gserver, plugin)
+	plugin.log.Info().Msg("plugin initialized")
 	return plugin
 }
 
 func (p *DevicePlugin) Run(ctx context.Context) error {
-	p.log.Info().Str("addr", socketPath).Msg("starting grpc server")
-	if err := p.grpcServe(ctx); err != nil {
+	// errCh is used to collect errors from goroutines and
+	// handle them in Run().
+	var (
+		runErr error
+		errCh  = make(chan error)
+	)
+	defer close(errCh)
+	go func() {
+		for err := range errCh {
+			if err != nil {
+				p.log.Err(err).Msg("error reported by goroutine")
+				runErr = errors.Join(runErr, err)
+			}
+		}
+	}()
+
+	if err := p.grpcServe(ctx, errCh); err != nil {
 		return err
 	}
 
@@ -50,14 +68,21 @@ func (p *DevicePlugin) Run(ctx context.Context) error {
 	}
 	p.log.Info().Str("addr", socketPath).Msg("grpc server ready")
 
-	p.log.Info().Str("addr", socketPath).Msg("registering with kubelet")
 	kubeletAddr := fmt.Sprintf("unix://%s", v1beta1.KubeletSocket)
 	if err := p.registerKubelet(ctx, kubeletAddr); err != nil {
 		return err
 	}
-	p.log.Info().Str("addr", socketPath).Msg("registration completed successfully")
+	p.log.Info().Str("addr", socketPath).Msg("plugin registered with kubelet")
 
-	return nil
+	closeHandler, err := p.restartHandler(ctx, kubeletAddr, errCh)
+	if err != nil {
+		return err
+	}
+	defer closeHandler()
+	p.log.Info().Str("addr", socketPath).Msg("restart handler configured")
+
+	<-ctx.Done()
+	return runErr
 }
 
 func (p *DevicePlugin) registerKubelet(ctx context.Context, addr string) error {
@@ -79,4 +104,60 @@ func (p *DevicePlugin) registerKubelet(ctx context.Context, addr string) error {
 	}
 
 	return nil
+}
+
+func (p *DevicePlugin) restartHandler(ctx context.Context, kubeletAddr string, errCh chan<- error) (func(), error) {
+	watcher, err := fsnotify.NewWatcher()
+	if err != nil {
+		return nil, err
+	}
+
+	cleanup := func() {
+		watcher.Close()
+	}
+
+	tick := time.Tick(2 * time.Second)
+	go func() {
+	LOOP:
+		for {
+			select {
+			case <-ctx.Done():
+				break LOOP
+			case event, ok := <-watcher.Events:
+				if !ok {
+					continue
+				}
+
+				if event.Name == socketPath && event.Has(fsnotify.Remove) {
+					p.log.Info().Msg("kubelet restarted, re-registering plugin with kubelet")
+					p.gserver.Stop()
+					p.gserver = grpc.NewServer()
+
+					if err := p.grpcServe(ctx, errCh); err != nil {
+						errCh <- err
+						break LOOP
+					}
+
+					if err := p.registerKubelet(ctx, kubeletAddr); err != nil {
+						errCh <- err
+						break LOOP
+					}
+					p.log.Info().Msg("re-registration completed successfully")
+				}
+				<-tick
+			case err, ok := <-watcher.Errors:
+				if !ok {
+					continue
+				}
+
+				if err != nil {
+					errCh <- err
+					break LOOP
+				}
+				<-tick
+			}
+		}
+	}()
+
+	return cleanup, watcher.Add(v1beta1.DevicePluginPath)
 }

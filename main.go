@@ -14,10 +14,12 @@ import (
 
 func main() {
 	var (
-		log         = logger()
-		plugin      = pflex.NewPlugin(log)
-		ctx, cancel = context.WithCancel(context.Background())
+		log    = logger()
+		plugin = pflex.NewPlugin(log)
 	)
+
+	ctx, cancel := context.WithCancel(context.Background())
+	defer cancel()
 
 	sigCh := make(chan os.Signal, 1)
 	signal.Notify(sigCh, os.Interrupt, syscall.SIGTERM)
@@ -34,7 +36,6 @@ func main() {
 		}
 	}
 
-	<-ctx.Done()
 	log.Info().Msg("shutdown completed successfully")
 }
 
