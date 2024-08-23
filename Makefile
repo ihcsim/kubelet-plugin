@@ -12,6 +12,9 @@ lint: tidy
 tidy:
 	go mod tidy
 
+test: tidy
+	go test -v -race -cover ./...
+
 run: build
 	sudo ./bin/device-plugin
 
