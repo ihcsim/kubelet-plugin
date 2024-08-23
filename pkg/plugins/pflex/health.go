@@ -1,5 +1,7 @@
 package pflex
 
+import "k8s.io/kubelet/pkg/apis/deviceplugin/v1beta1"
+
 type DeviceHealth string
 
 func (h DeviceHealth) String() string {
@@ -7,6 +9,6 @@ func (h DeviceHealth) String() string {
 }
 
 const (
-	Healthy   DeviceHealth = "healthy"
-	Unhealthy DeviceHealth = "unhealthy"
+	Healthy   DeviceHealth = v1beta1.Healthy
+	Unhealthy DeviceHealth = v1beta1.Unhealthy
 )

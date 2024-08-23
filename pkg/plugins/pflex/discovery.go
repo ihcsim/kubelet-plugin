@@ -47,7 +47,7 @@ func (p *DevicePlugin) discoverDevices() (map[string]*Device, []*Device, error) 
 				Logger()
 
 			if exists && lastSeenState.Health == device.Health {
-				log.Info().Msg("no changes to device")
+				log.Debug().Msg("no changes to device")
 				continue
 			}
 			changeSet = append(changeSet, device)

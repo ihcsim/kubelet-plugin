@@ -33,7 +33,9 @@ func (p *DevicePlugin) ListAndWatch(empty *v1beta1.Empty, stream v1beta1.DeviceP
 			resp.Devices = append(resp.Devices, device)
 		}
 
+		p.log.Debug().Any("changeSet", changeSet).Msg("sending ListAndWatch response")
 		if err := stream.Send(resp); err != nil {
+			p.log.Err(err).Msg("failed to send ListAndWatch response")
 			return err
 		}
 	}
