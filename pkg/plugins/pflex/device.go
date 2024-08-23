@@ -13,8 +13,10 @@ var watchIntervalDuration = 10 * time.Second
 
 func (p *DevicePlugin) ListAndWatch(empty *v1beta1.Empty, stream v1beta1.DevicePlugin_ListAndWatchServer) error {
 	p.log.Debug().Msg("Calling DevicePlugin.ListAndWatch()")
-	tick := time.Tick(watchIntervalDuration)
-	for range tick {
+	tick := time.NewTicker(watchIntervalDuration)
+	defer tick.Stop()
+
+	for range tick.C {
 		_, changeSet, err := p.discoverDevices()
 		if err != nil {
 			return err

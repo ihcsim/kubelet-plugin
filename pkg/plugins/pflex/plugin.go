@@ -122,7 +122,9 @@ func (p *DevicePlugin) restartHandler(ctx context.Context, kubeletAddr string, e
 		watcher.Close()
 	}
 
-	tick := time.Tick(2 * time.Second)
+	tick := time.NewTicker(2 * time.Second)
+	defer tick.Stop()
+
 	go func() {
 	LOOP:
 		for {
@@ -147,7 +149,7 @@ func (p *DevicePlugin) restartHandler(ctx context.Context, kubeletAddr string, e
 					}
 					p.log.Info().Msg("re-registration completed successfully")
 				}
-				<-tick
+				<-tick.C
 			case err, ok := <-watcher.Errors:
 				if !ok {
 					continue
@@ -157,7 +159,7 @@ func (p *DevicePlugin) restartHandler(ctx context.Context, kubeletAddr string, e
 					errCh <- err
 					break LOOP
 				}
-				<-tick
+				<-tick.C
 			}
 		}
 	}()
