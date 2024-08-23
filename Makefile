@@ -23,6 +23,7 @@ kubelet:
 	sudo kubelet/kubelet-v1.31.0 \
 		--config=kubelet/kubelet.yaml \
 		--hostname-override localhost \
+		--feature-gates=ResourceHealthStatus=true \
 		--v=4 2>&1 | tee kubelet/kubelet.log
 
 .PHONY: cdi

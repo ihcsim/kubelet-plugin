@@ -42,17 +42,29 @@ func (p *DevicePlugin) ListAndWatch(empty *v1beta1.Empty, stream v1beta1.DeviceP
 
 func (p *DevicePlugin) Allocate(ctx context.Context, r *v1beta1.AllocateRequest) (*v1beta1.AllocateResponse, error) {
 	p.log.Debug().Msg("Calling DevicePlugin.Allocate()")
-	return nil, nil
+	resp := &v1beta1.AllocateResponse{}
+	for _, allocateRequest := range r.ContainerRequests {
+		// see cdi/pflex.yaml for pflex CDI configuration
+		car := &v1beta1.ContainerAllocateResponse{}
+		for _, id := range allocateRequest.DevicesIDs {
+			p.log.Info().Str("name", id).Msg("allocating CDI device")
+			car.CDIDevices = append(car.CDIDevices, &v1beta1.CDIDevice{
+				Name: id,
+			})
+		}
+		resp.ContainerResponses = append(resp.ContainerResponses, car)
+	}
+	return resp, nil
 }
 
 func (p *DevicePlugin) GetPreferredAllocation(ctx context.Context, r *v1beta1.PreferredAllocationRequest) (*v1beta1.PreferredAllocationResponse, error) {
 	p.log.Debug().Msg("Calling DevicePlugin.GetPreferredAllocation()")
-	return nil, nil
+	return &v1beta1.PreferredAllocationResponse{}, nil
 }
 
 func (p *DevicePlugin) PreStartContainer(ctx context.Context, r *v1beta1.PreStartContainerRequest) (*v1beta1.PreStartContainerResponse, error) {
 	p.log.Debug().Msg("Calling DevicePlugin.PrestartContainer()")
-	return nil, nil
+	return &v1beta1.PreStartContainerResponse{}, nil
 }
 
 func (p *DevicePlugin) GetDevicePluginOptions(context.Context, *v1beta1.Empty) (*v1beta1.DevicePluginOptions, error) {
