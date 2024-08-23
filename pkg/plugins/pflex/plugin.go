@@ -25,6 +25,10 @@ var (
 )
 
 type DevicePlugin struct {
+	// cache is used to store the last-seen state of devices on the host.
+	// it's updated by the discoverDevices() method.
+	cache map[string]*DeviceState
+
 	gserver *grpc.Server
 	log     *zerolog.Logger
 }
@@ -32,6 +36,7 @@ type DevicePlugin struct {
 func NewPlugin(log *zerolog.Logger) *DevicePlugin {
 	gserver := grpc.NewServer()
 	plugin := &DevicePlugin{
+		cache:   map[string]*DeviceState{},
 		gserver: gserver,
 		log:     log,
 	}
