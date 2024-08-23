@@ -46,9 +46,15 @@ func (p *DevicePlugin) discoverDevices() (map[string]*Device, []*Device, error) 
 				Str("path", filepath.Join(hostDevicePath, entry.Name())).
 				Logger()
 
+			if exists && lastSeenState.Health == device.Health {
+				log.Info().Msg("no changes to device")
+				continue
+			}
+			changeSet = append(changeSet, device)
+
 			// add new device's state to cache
 			if !exists {
-				log.Info().Msg("new device discovered")
+				log.Info().Msg("found new device")
 				p.cache[id] = &DeviceState{
 					Device:            device,
 					lastSeenTimestamp: time.Now().Unix(),

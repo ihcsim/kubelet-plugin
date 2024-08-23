@@ -9,7 +9,7 @@ import (
 
 const hostDevicePath = "/dev"
 
-var watchIntervalDuration = 5 * time.Second
+var watchIntervalDuration = 10 * time.Second
 
 func (p *DevicePlugin) ListAndWatch(empty *v1beta1.Empty, stream v1beta1.DevicePlugin_ListAndWatchServer) error {
 	p.log.Debug().Msg("Calling DevicePlugin.ListAndWatch()")
