@@ -3,6 +3,11 @@ SHELL := /bin/bash
 GOOS ?= linux
 GOARCH ?= amd64
 
+# see /proc/devices for the major number of /dev/random
+# on your machine
+DEVRAND_MAJOR_VERSION ?= 1
+DEVRAND_MINOR_VERSION ?= 8
+
 build: tidy
 	GOOS=$(GOOS) GOARCH=$(GOARCH) go build -o ./bin/device-plugin main.go
 
@@ -26,14 +31,18 @@ kubelet:
 	sudo kubelet/kubelet-v1.31.0 \
 		--config=kubelet/kubelet.yaml \
 		--hostname-override localhost \
-		--feature-gates=ResourceHealthStatus=true \
 		--v=4 2>&1 | tee kubelet/kubelet.log
 
 .PHONY: cdi
 cdi:
 	sudo mkdir -p /etc/cdi
 	sudo cp cdi/pflex.yaml /etc/cdi/pflex.yaml
-	sudo rm -rf /dev/pflex*
-	sudo mknod -m 666 /dev/pflex0 b 25 25
-	sudo mknod -m 666 /dev/pflex1 b 25 25
-	sudo mknod -m 666 /dev/pflex2 b 25 25
+	sudo rm -rf /dev/pflex[0-3]
+	sudo mknod -m 666 /dev/pflex0 c 1 8
+	sudo mknod -m 666 /dev/pflex1 c 1 8
+	sudo mknod -m 666 /dev/pflex2 c 1 8
+
+.PHONY: deploy
+deploy:
+	mkdir -p kubelet/run/{pods,logs}
+	cp yaml/busybox.yaml kubelet/run/pods

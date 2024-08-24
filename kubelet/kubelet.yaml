@@ -4,7 +4,11 @@ enableServer: false
 registerNode: false
 readOnlyPort: 10250
 failSwapOn: false
+featureGates:
+  ResourceHealthStatus: true
 containerRuntimeEndpoint: unix:///run/containerd/containerd.sock
+staticPodPath: ./run/pods
+podLogsDir: ./run/logs
 podCIDR: 10.0.0.0/24
 authentication:
   anonymous:

@@ -1,0 +1,16 @@
+apiVersion: v1
+kind: Pod
+metadata:
+  name: busybox-pflex
+spec:
+  containers:
+  - image: busybox
+    name: busybox
+    command:
+      - sleep
+      - infinity
+    resources:
+      requests:
+        pflex.io/block: 1
+      limits:
+        pflex.io/block: 1

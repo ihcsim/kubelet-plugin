@@ -1,3 +1,4 @@
 bin
 kubelet.log
 kubelet-v1.31.0
+kubelet/run

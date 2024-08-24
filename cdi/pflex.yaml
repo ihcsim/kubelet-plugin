@@ -1,5 +1,5 @@
 cdiVersion: 0.8.0
-kind: isim.dev/pflex
+kind: pflex.io/block
 devices:
 - name: pflex0
   containerEdits:

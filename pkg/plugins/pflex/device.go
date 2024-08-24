@@ -12,7 +12,7 @@ const hostDevicePath = "/dev"
 var watchIntervalDuration = 10 * time.Second
 
 func (p *DevicePlugin) ListAndWatch(empty *v1beta1.Empty, stream v1beta1.DevicePlugin_ListAndWatchServer) error {
-	p.log.Debug().Msg("Calling DevicePlugin.ListAndWatch()")
+	p.log.Debug().Msg("calling DevicePlugin.ListAndWatch()")
 	tick := time.NewTicker(watchIntervalDuration)
 	defer tick.Stop()
 
@@ -45,7 +45,7 @@ func (p *DevicePlugin) ListAndWatch(empty *v1beta1.Empty, stream v1beta1.DeviceP
 }
 
 func (p *DevicePlugin) Allocate(ctx context.Context, r *v1beta1.AllocateRequest) (*v1beta1.AllocateResponse, error) {
-	p.log.Debug().Msg("Calling DevicePlugin.Allocate()")
+	p.log.Debug().Msg("calling DevicePlugin.Allocate()")
 	resp := &v1beta1.AllocateResponse{}
 	for _, allocateRequest := range r.ContainerRequests {
 		// see cdi/pflex.yaml for pflex CDI configuration
@@ -62,17 +62,17 @@ func (p *DevicePlugin) Allocate(ctx context.Context, r *v1beta1.AllocateRequest)
 }
 
 func (p *DevicePlugin) GetPreferredAllocation(ctx context.Context, r *v1beta1.PreferredAllocationRequest) (*v1beta1.PreferredAllocationResponse, error) {
-	p.log.Debug().Msg("Calling DevicePlugin.GetPreferredAllocation()")
+	p.log.Debug().Msg("calling DevicePlugin.GetPreferredAllocation()")
 	return &v1beta1.PreferredAllocationResponse{}, nil
 }
 
 func (p *DevicePlugin) PreStartContainer(ctx context.Context, r *v1beta1.PreStartContainerRequest) (*v1beta1.PreStartContainerResponse, error) {
-	p.log.Debug().Msg("Calling DevicePlugin.PrestartContainer()")
+	p.log.Debug().Msg("calling DevicePlugin.PrestartContainer()")
 	return &v1beta1.PreStartContainerResponse{}, nil
 }
 
 func (p *DevicePlugin) GetDevicePluginOptions(context.Context, *v1beta1.Empty) (*v1beta1.DevicePluginOptions, error) {
-	p.log.Debug().Msg("Calling DevicePlugin.GetDevicePluginOptions()")
+	p.log.Debug().Msg("calling DevicePlugin.GetDevicePluginOptions()")
 	return &v1beta1.DevicePluginOptions{}, nil
 }
 
