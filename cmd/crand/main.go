@@ -8,14 +8,14 @@ import (
 	"syscall"
 	"time"
 
-	"github.com/ihcsim/kubelet-plugin/pkg/plugins/pflex"
+	"github.com/ihcsim/kubelet-plugin/pkg/plugins/crand"
 	"github.com/rs/zerolog"
 )
 
 func main() {
 	var (
 		log    = logger()
-		plugin = pflex.NewPlugin(log)
+		plugin = crand.NewPlugin(log)
 	)
 
 	ctx, cancel := context.WithCancel(context.Background())

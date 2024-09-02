@@ -1,42 +1,42 @@
 cdiVersion: 0.8.0
-kind: pflex.io/block
+kind: github.com.ihcsim/crand
 devices:
-- name: pflex0
+- name: crand0
   containerEdits:
     env:
-    - CDI_DEVICE_NAME=pflex0
+    - CDI_DEVICE_NAME=crand0
     deviceNodes:
     - path: /dev/sdg0
-      hostPath: /dev/pflex0
+      hostPath: /dev/crand0
       type: block
-      major: 25
-      minor: 25
+      major :${DEVICE_MAJOR_VERSION}
+      minor: ${DEVICE_MINOR_VERSION}
       permissions: "rw"
       uid: 5000
       gid: 5000
-- name: pflex1
+- name: crand1
   containerEdits:
     env:
-    - CDI_DEVICE_NAME=pflex1
+    - CDI_DEVICE_NAME=crand1
     deviceNodes:
     - path: /dev/sdg1
-      hostPath: /dev/pflex1
+      hostPath: /dev/crand1
       type: block
-      major: 25
-      minor: 25
+      major :${DEVICE_MAJOR_VERSION}
+      minor: ${DEVICE_MINOR_VERSION}
       permissions: "rw"
       uid: 5000
       gid: 5000
-- name: pflex2
+- name: crand2
   containerEdits:
     env:
-    - CDI_DEVICE_NAME=pflex2
+    - CDI_DEVICE_NAME=crand2
     deviceNodes:
     - path: /dev/sdg2
-      hostPath: /dev/pflex2
+      hostPath: /dev/crand2
       type: block
-      major: 25
-      minor: 25
+      major :${DEVICE_MAJOR_VERSION}
+      minor: ${DEVICE_MINOR_VERSION}
       permissions: "rw"
       uid: 5000
       gid: 5000

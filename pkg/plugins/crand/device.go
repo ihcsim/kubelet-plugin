@@ -1,4 +1,4 @@
-package pflex
+package crand
 
 import (
 	"context"
@@ -48,7 +48,7 @@ func (p *DevicePlugin) Allocate(ctx context.Context, r *v1beta1.AllocateRequest)
 	p.log.Debug().Msg("calling DevicePlugin.Allocate()")
 	resp := &v1beta1.AllocateResponse{}
 	for _, allocateRequest := range r.ContainerRequests {
-		// see cdi/pflex.yaml for pflex CDI configuration
+		// see cdi/crand.yaml for crand CDI configuration
 		car := &v1beta1.ContainerAllocateResponse{}
 		for _, id := range allocateRequest.DevicesIDs {
 			p.log.Info().Str("name", id).Msg("allocating CDI device")

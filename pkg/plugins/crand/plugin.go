@@ -1,4 +1,4 @@
-package pflex
+package crand
 
 import (
 	"context"
@@ -14,8 +14,8 @@ import (
 )
 
 const (
-	socketName   = "pflex.sock"
-	resourceName = "pflex.io/block"
+	socketName   = "crand.sock"
+	resourceName = "github.com.ihcsim/crand"
 )
 
 var (

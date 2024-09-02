@@ -5,11 +5,13 @@ GOARCH ?= amd64
 
 # see /proc/devices for the major number of /dev/random
 # on your machine
-DEVRAND_MAJOR_VERSION ?= 1
-DEVRAND_MINOR_VERSION ?= 8
+MAJOR_VERSION_CRAND ?= 1
+MINOR_VERSION_CRAND ?= 8
 
-build: tidy
-	GOOS=$(GOOS) GOARCH=$(GOARCH) go build -o ./bin/device-plugin main.go
+build: crand
+
+crand: tidy
+	GOOS=$(GOOS) GOARCH=$(GOARCH) go build -o ./bin/dp-crand cmd/crand/main.go
 
 lint: tidy
 	golangci-lint run .
@@ -21,7 +23,7 @@ test: tidy
 	go test -v -race -cover ./...
 
 run: build
-	sudo ./bin/device-plugin
+	sudo ./bin/device-plugin-crand
 
 .PHONY: kubelet
 kubelet:

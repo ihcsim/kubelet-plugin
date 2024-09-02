@@ -1,4 +1,4 @@
-package pflex
+package crand
 
 import "k8s.io/kubelet/pkg/apis/deviceplugin/v1beta1"
 

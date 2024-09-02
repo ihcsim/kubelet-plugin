@@ -1,4 +1,4 @@
-package pflex
+package crand
 
 import (
 	"os"
@@ -30,7 +30,7 @@ func (p *DevicePlugin) discoverDevices() (map[string]*Device, []*Device, error) 
 			continue
 		}
 
-		if strings.Contains(entry.Name(), "pflex") {
+		if strings.Contains(entry.Name(), "crand") {
 			id := entry.Name()
 			device := &Device{
 				ID:     id,
