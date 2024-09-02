@@ -14,7 +14,7 @@ crand: tidy
 	GOOS=$(GOOS) GOARCH=$(GOARCH) go build -o ./bin/dp-crand cmd/crand/main.go
 
 lint: tidy
-	golangci-lint run .
+	golangci-lint run ./...
 
 tidy:
 	go mod tidy
