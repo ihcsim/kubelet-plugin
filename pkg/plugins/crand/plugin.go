@@ -7,6 +7,7 @@ import (
 	"time"
 
 	"github.com/fsnotify/fsnotify"
+	"github.com/ihcsim/kubelet-plugin/pkg/plugins"
 	"github.com/rs/zerolog"
 	"google.golang.org/grpc"
 	"google.golang.org/grpc/credentials/insecure"
@@ -27,7 +28,7 @@ var (
 type DevicePlugin struct {
 	// cache is used to store the last-seen state of devices on the host.
 	// it's updated by the discoverDevices() method.
-	cache map[string]*DeviceState
+	cache map[string]*plugins.DeviceState
 
 	gserver *grpc.Server
 	log     *zerolog.Logger
@@ -36,7 +37,7 @@ type DevicePlugin struct {
 func NewPlugin(log *zerolog.Logger) *DevicePlugin {
 	gserver := grpc.NewServer()
 	plugin := &DevicePlugin{
-		cache:   map[string]*DeviceState{},
+		cache:   map[string]*plugins.DeviceState{},
 		gserver: gserver,
 		log:     log,
 	}

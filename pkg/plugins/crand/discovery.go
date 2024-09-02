@@ -6,23 +6,28 @@ import (
 	"strings"
 	"time"
 
+	"github.com/ihcsim/kubelet-plugin/pkg/plugins"
 	"github.com/rs/zerolog/log"
 )
 
-func (p *DevicePlugin) discoverDevices() (map[string]*Device, []*Device, error) {
+func (p *DevicePlugin) discoverDevices() ([]*plugins.Device, error) {
 	var (
-		fullSet   = map[string]*Device{}
-		changeSet = []*Device{}
+		// fullSet keeps track of all available devices. it's used to remove any stale
+		// cache entries later.
+		fullSet = map[string]*plugins.Device{}
+
+		// changeSet identifies which devices have changed since the last discovery.
+		changeSet = []*plugins.Device{}
 	)
 
 	f, err := os.Open(hostDevicePath)
 	if err != nil {
-		return nil, nil, err
+		return nil, err
 	}
 
 	entries, err := f.ReadDir(0)
 	if err != nil {
-		return nil, nil, err
+		return nil, err
 	}
 
 	for _, entry := range entries {
@@ -30,50 +35,47 @@ func (p *DevicePlugin) discoverDevices() (map[string]*Device, []*Device, error) 
 			continue
 		}
 
-		if strings.Contains(entry.Name(), "crand") {
-			id := entry.Name()
-			device := &Device{
-				ID:     id,
-				Health: Healthy,
-			}
+		// skip any non-crand devices
+		if !strings.Contains(entry.Name(), "crand") {
+			continue
+		}
 
-			fullSet[id] = device
-			lastSeenState, exists := p.cache[id]
+		id := entry.Name()
+		device := &plugins.Device{
+			ID:     id,
+			Health: plugins.Healthy,
+		}
 
-			log := p.log.With().
-				Str("device", id).
-				Str("health", device.Health.String()).
-				Str("path", filepath.Join(hostDevicePath, entry.Name())).
-				Logger()
+		fullSet[id] = device
+		lastSeenState, exists := p.cache[id]
 
-			if exists && lastSeenState.Health == device.Health {
-				continue
-			}
-			changeSet = append(changeSet, device)
+		// no change in device's state
+		if exists && lastSeenState.Health == device.Health {
+			continue
+		}
 
-			// add new device's state to cache
-			if !exists {
-				log.Info().Msg("found new device")
-				p.cache[id] = &DeviceState{
-					Device:            device,
-					lastSeenTimestamp: time.Now().Unix(),
-				}
-				continue
-			}
+		log := p.log.With().
+			Str("device", id).
+			Str("health", device.Health.String()).
+			Str("path", filepath.Join(hostDevicePath, entry.Name())).
+			Logger()
 
-			// update existing device's state in cache, if changed
+		if !exists {
+			log.Info().Msg("found new device")
+		} else {
 			if lastSeenState.Health != device.Health {
 				log.Info().
 					Str("before", lastSeenState.Health.String()).
-					Time("last seen", time.Unix(lastSeenState.lastSeenTimestamp, 0)).
+					Time("last seen", time.Unix(lastSeenState.LastSeenTimestamp, 0)).
 					Msg("device health changed")
-				p.cache[id] = &DeviceState{
-					lastSeenTimestamp: time.Now().Unix(),
-					Device:            device,
-				}
-				changeSet = append(changeSet, device)
 			}
 		}
+
+		p.cache[id] = &plugins.DeviceState{
+			Device:            device,
+			LastSeenTimestamp: time.Now().Unix(),
+		}
+		changeSet = append(changeSet, device)
 	}
 
 	// remove devices that are no longer present from cache
@@ -84,5 +86,5 @@ func (p *DevicePlugin) discoverDevices() (map[string]*Device, []*Device, error) 
 		}
 	}
 
-	return fullSet, changeSet, nil
+	return changeSet, nil
 }

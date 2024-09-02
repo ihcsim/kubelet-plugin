@@ -17,7 +17,7 @@ func (p *DevicePlugin) ListAndWatch(empty *v1beta1.Empty, stream v1beta1.DeviceP
 	defer tick.Stop()
 
 	for range tick.C {
-		_, changeSet, err := p.discoverDevices()
+		changeSet, err := p.discoverDevices()
 		if err != nil {
 			return err
 		}
@@ -74,16 +74,4 @@ func (p *DevicePlugin) PreStartContainer(ctx context.Context, r *v1beta1.PreStar
 func (p *DevicePlugin) GetDevicePluginOptions(context.Context, *v1beta1.Empty) (*v1beta1.DevicePluginOptions, error) {
 	p.log.Debug().Msg("calling DevicePlugin.GetDevicePluginOptions()")
 	return &v1beta1.DevicePluginOptions{}, nil
-}
-
-// Device represents a device managed by this plugin.
-type Device struct {
-	ID     string
-	Health DeviceHealth
-}
-
-// DeviceState maintains the last seen of a device at a given timestamp.
-type DeviceState struct {
-	lastSeenTimestamp int64
-	*Device
 }

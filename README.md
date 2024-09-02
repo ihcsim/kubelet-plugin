@@ -27,6 +27,29 @@ To enable CDI support with containerd v1.6+, update the
 
 Restart containerd for the changes to take effect.
 
+Set up the sample devices and CDI configuration files:
+
+```sh
+# sudo required
+make cdi
+```
+
+The CDI configuration files can be found in the local `/etc/cdi` directory.
+
+## Flatcar
+
+Download and start a Flatcar Linux VM with `virsh`:
+
+```sh
+make flatcar-start
+```
+
+If the host uses AppArmor, allow qemu to access the config files:
+
+```sh
+echo "  `pwd`/flatcar/provision.ign r," >> /etc/apparmor.d/abstractions/libvirt-qemu
+```
+
 ## Testing With Kubelet
 
 For ease of testing purposes, this repo comes with the kubelet v1.31.0 binary. 
