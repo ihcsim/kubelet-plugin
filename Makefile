@@ -31,10 +31,10 @@ tidy:
 test: tidy
 	go test -v -race -cover ./...
 
-run-crand: crand
+run.crand: crand
 	sudo ./bin/dp-crand
 
-run-kvm: kvm
+run.kvm: kvm
 	sudo ./bin/dp-kvm
 
 .PHONY: kubelet
@@ -50,6 +50,7 @@ kubelet:
 .PHONY: cdi
 cdi:
 	sudo mkdir -p /etc/cdi
+	sudo cp ./cdi/github.com.ihcsim.kvm.yaml /etc/cdi/github.com.ihcsim.kvm.yaml
 	sed \
 		-e 's/$${DEVICE_MAJOR_VERSION}/$(MAJOR_VERSION_CRAND)/g' \
 		-e 's/$${DEVICE_MINOR_VERSION}/$(MINOR_VERSION_CRAND)/g' \
@@ -62,7 +63,10 @@ cdi:
 .PHONY: deploy
 deploy:
 	mkdir -p kubelet/run/{pods,logs}
-	cp yaml/busybox.yaml kubelet/run/pods
+	cp yaml/busybox-*.yaml kubelet/run/pods
+
+undeploy:
+	rm kubelet/run/pods/*.yaml
 
 $(FLATCAR_DIR):
 	mkdir -p $(FLATCAR_DIR)

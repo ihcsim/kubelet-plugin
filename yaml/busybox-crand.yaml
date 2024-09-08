@@ -1,16 +1,16 @@
 apiVersion: v1
 kind: Pod
 metadata:
-  name: busybox-pflex
+  name: busybox-crand
 spec:
   containers:
   - image: busybox
     name: busybox
     command:
-      - sleep
-      - infinity
+    - sleep
+    - infinity
     resources:
       requests:
-        pflex.io/block: 1
+        github.com.ihcsim/crand: 2
       limits:
-        pflex.io/block: 1
+        github.com.ihcsim/crand: 2

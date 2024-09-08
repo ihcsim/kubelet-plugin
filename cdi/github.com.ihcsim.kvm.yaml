@@ -1,0 +1,18 @@
+cdiVersion: 0.8.0
+kind: github.com.ihcsim/kvm
+devices:
+- name: kvm
+  containerEdits:
+    env:
+    - CDI_DEVICE_NAME=kvm
+    deviceNodes:
+    - path: /dev/kvm
+      hostPath: /dev/kvm
+containerEdits:
+  env:
+  - CDI_PROVIDER=isim.dev
+  mounts:
+  - hostPath: /tmp/data
+    containerPath: /tmp/data
+    type: tmpfs
+    options: ["nosuid","strictatime","mode=755","size=65536k"]

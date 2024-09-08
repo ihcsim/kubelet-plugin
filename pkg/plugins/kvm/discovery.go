@@ -44,7 +44,7 @@ func (p *DevicePlugin) discoverDevices() (bool, error) {
 	}
 
 	lastSeenState := p.cache
-	if lastSeenState.Health == device.Health {
+	if lastSeenState.Health != device.Health {
 		log.Info().
 			Str("before", lastSeenState.Health.String()).
 			Time("last seen", time.Unix(lastSeenState.LastSeenTimestamp, 0)).
