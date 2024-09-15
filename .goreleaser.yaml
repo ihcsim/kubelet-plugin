@@ -19,6 +19,12 @@ archives:
     {{- else }}{{ .Arch | tolower }}{{ end }}
     {{- if .Arm }}v{{ .Arm }}{{ end }}
 
+release:
+  draft: true
+  replace_existing_draft: true
+  extra_files:
+  - glob: cdi.tar.gz
+
 changelog:
   sort: asc
   filters:

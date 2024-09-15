@@ -157,3 +157,13 @@ make test
 
 make lint
 ```
+
+To create a new release, a new tag is required:
+
+```sh
+git tag -a <new_tag> -m "<new_tag_message>"
+
+git push origin <new_tag>
+```
+
+Manually start the `default` GHA pipeline.

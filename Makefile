@@ -13,7 +13,7 @@ FLATCAR_DIR := ./flatcar
 build: clean crand kvm
 
 clean:
-	rm -rf bin
+	rm -rf bin dist cdi.tar.gz
 
 crand: tidy
 	GOOS=$(GOOS) GOARCH=$(GOARCH) go build -o ./bin/dp-crand cmd/crand/main.go
@@ -67,6 +67,9 @@ deploy:
 
 undeploy:
 	rm kubelet/run/pods/*.yaml
+
+cdi.tar.gz:
+	tar -czvf cdi.tar.gz cdi
 
 $(FLATCAR_DIR):
 	mkdir -p $(FLATCAR_DIR)

@@ -4,3 +4,4 @@ kubelet-v1.31.0
 kubelet/run
 flatcar
 dist/
+cdi.tar.gz
