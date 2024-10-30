@@ -70,23 +70,3 @@ undeploy:
 
 cdi.tar.gz:
 	tar -czvf cdi.tar.gz cdi
-
-$(FLATCAR_DIR):
-	mkdir -p $(FLATCAR_DIR)
-	wget https://stable.release.flatcar-linux.net/amd64-usr/current/flatcar_production_qemu_image.img -P $(FLATCAR_DIR)
-	qemu-img create -f qcow2 -F qcow2 -b flatcar_production_qemu_image.img $(FLATCAR_DIR)/flatcar-01.qcow2
-	$(MAKE) butane2ign
-
-butane2ign:
-	sed -e "s/\$${SSH_PUB_KEY}/$$(cat ~/.ssh/id_ecdsa_gh.pub)/g" ./yaml/butane.yaml | docker run --rm -i quay.io/coreos/butane:release | jq . > ./flatcar/provision.ign
-
-flatcar-start: $(FLATCAR_DIR)
-	sudo virt-install \
-    --connect qemu:///system \
-    --osinfo generic \
-    --import \
-    --name flatcar-linux1 \
-    --ram 1024 --vcpus 1 \
-    --disk path=./flatcar/flatcar-linux1.qcow2,format=qcow2,bus=virtio,size=5 \
-    --vnc --noautoconsole \
-    --qemu-commandline='-fw_cfg name=opt/org.flatcar-linux/config,file=$(shell pwd)/flatcar/provision.ign'
