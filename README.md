@@ -153,10 +153,18 @@ make test
 make lint
 ```
 
+To update the Docker image and DaemonSet YAML, download [ko](https://ko.build/).
+
 To build and push a new Docker image:
 
 ```sh
-make image KO_DOCKER_REPO=<docker_repo>
+make image [KO_DOCKER_REPO=<docker_repo>]
+```
+
+To update the DaemonSet YAML with the latest image:
+
+```sh
+make yaml [KO_DOCKER_REPO=<docker_repo>]
 ```
 
 To create a new release, a new tag is required:

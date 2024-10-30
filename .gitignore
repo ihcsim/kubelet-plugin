@@ -5,3 +5,4 @@ kubelet/run
 flatcar
 dist/
 cdi.tar.gz
+yaml/daemonset.yaml

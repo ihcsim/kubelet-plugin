@@ -2,6 +2,7 @@ SHELL := /bin/bash
 
 GOOS ?= linux
 GOARCH ?= amd64
+KO_DOCKER_REPO ?= isim
 
 build: clean kvm
 
@@ -23,6 +24,10 @@ test: tidy
 
 image:
 	KO_DOCKER_REPO=$(KO_DOCKER_REPO) ko build -B .
+
+.PHONY: yaml
+yaml: image
+	KO_DOCKER_REPO=$(KO_DOCKER_REPO) ko resolve -B -f yaml/daemonset.yaml.tmpl > yaml/daemonset.yaml
 
 run.kvm: kvm
 	sudo ./bin/kvm-device-plugin
