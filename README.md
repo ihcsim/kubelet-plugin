@@ -3,9 +3,6 @@
 This repo contains examples of kubelet plugins that can be used to expose the
 following node devices to the Kubelet:
 
-* [Character device file](https://man7.org/linux/man-pages/man2/mknod.2.html).
-The `crand` plugin manages character special files pointing to the local
-`/dev/random`.
 * KVM device file. The `kvm` plugin points to the local `/dev/kvm`.
 
 For more information on Kubernetes device plugins, see
@@ -55,8 +52,6 @@ Run the plugin against the kubelet:
 
 ```sh
 # sudo required
-make run.crand
-
 make run.kvm
 ```
 
