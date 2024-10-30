@@ -153,6 +153,12 @@ make test
 make lint
 ```
 
+To build and push a new Docker image:
+
+```sh
+make image KO_DOCKER_REPO=<docker_repo>
+```
+
 To create a new release, a new tag is required:
 
 ```sh

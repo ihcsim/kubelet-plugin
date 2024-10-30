@@ -1,4 +1,4 @@
-module github.com/ihcsim/kubelet-plugin
+module github.com/ihcsim/kvm-device-plugin
 
 go 1.22.0
 

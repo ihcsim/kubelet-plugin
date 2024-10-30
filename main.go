@@ -8,7 +8,7 @@ import (
 	"syscall"
 	"time"
 
-	"github.com/ihcsim/kubelet-plugin/pkg/plugins/kvm"
+	"github.com/ihcsim/kvm-device-plugin/pkg/plugins/kvm"
 	"github.com/rs/zerolog"
 )
 

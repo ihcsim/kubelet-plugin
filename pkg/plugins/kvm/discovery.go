@@ -5,7 +5,7 @@ import (
 	"path/filepath"
 	"time"
 
-	"github.com/ihcsim/kubelet-plugin/pkg/plugins"
+	"github.com/ihcsim/kvm-device-plugin/pkg/plugins"
 )
 
 func (p *DevicePlugin) discoverDevices() (bool, error) {

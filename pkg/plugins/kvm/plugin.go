@@ -5,7 +5,7 @@ import (
 	"errors"
 	"fmt"
 
-	"github.com/ihcsim/kubelet-plugin/pkg/plugins"
+	"github.com/ihcsim/kvm-device-plugin/pkg/plugins"
 	"github.com/rs/zerolog"
 	"k8s.io/kubelet/pkg/apis/deviceplugin/v1beta1"
 )

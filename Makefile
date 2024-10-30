@@ -10,7 +10,7 @@ clean:
 
 .PHONY: kvm
 kvm: tidy
-	GOOS=$(GOOS) GOARCH=$(GOARCH) go build -o ./bin/kvm-plugin cmd/kvm/main.go
+	GOOS=$(GOOS) GOARCH=$(GOARCH) go build -o ./bin/kvm-device-plugin .
 
 lint: tidy
 	golangci-lint run ./...
@@ -21,8 +21,11 @@ tidy:
 test: tidy
 	go test -v -race -cover ./...
 
+image:
+	KO_DOCKER_REPO=$(KO_DOCKER_REPO) ko build -B .
+
 run.kvm: kvm
-	sudo ./bin/kvm-plugin
+	sudo ./bin/kvm-device-plugin
 
 .PHONY: kubelet
 kubelet:
