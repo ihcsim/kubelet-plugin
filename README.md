@@ -167,6 +167,32 @@ To update the DaemonSet YAML with the latest image:
 make yaml [KO_DOCKER_REPO=<docker_repo>]
 ```
 
+## Debugging
+
+Download `delve` from https://github.com/go-delve/delve.
+
+Start by building the debug image:
+
+```sh
+make image-debug
+```
+
+Use Docker to start the debug container:
+
+```sh
+docker run -p 40000:40000 <img>
+```
+
+Now, connect to the debug container:
+
+```sh
+dlv connect 127.0.0.1:40000
+```
+
+For more information, see https://ko.build/features/debugging/
+
+## Release
+
 To create a new release, a new tag is required:
 
 ```sh

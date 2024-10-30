@@ -25,6 +25,9 @@ test: tidy
 image:
 	KO_DOCKER_REPO=$(KO_DOCKER_REPO) ko build -B .
 
+image-debug:
+	KO_DOCKER_REPO=$(KO_DOCKER_REPO) ko build -B --debug .
+
 .PHONY: yaml
 yaml: image
 	KO_DOCKER_REPO=$(KO_DOCKER_REPO) ko resolve -B -f yaml/daemonset.yaml.tmpl > yaml/daemonset.yaml
