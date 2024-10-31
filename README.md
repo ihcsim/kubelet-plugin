@@ -55,24 +55,18 @@ Run the plugin against the kubelet:
 make run.kvm
 ```
 
-Expect the plugin `github.com.ihcsim/crand` to register successfully with the kubelet:
+Expect the plugin `github.com.ihcsim/kvm` to register successfully with the kubelet:
 
-```sh
-I0823 09:22:35.030339 1309759 server.go:144] "Got registration request from device plugin with resource" resourceName="github.com.ihcsim/crand"
-I0823 09:22:35.030374 1309759 handler.go:95] "Registered client" name="github.com.ihcsim/crand"
-I0823 09:22:35.030966 1309759 manager.go:238] "Device plugin connected" resourceName="github.com.ihcsim/crand"
-# ...
-I0823 09:04:14.473749 1352537 setters.go:329] "Updated capacity for device plugin" plugin="github.com.ihcsim/crand" capacity=3
-```
-
-Similarly, the plugin `github.com.ihcsim/kvm` should also register successfully:
 ```sh   
-I0908 13:46:44.317313  211403 server.go:144] "Got registration request from device plugin with resource" resourceName="github.com.ihcsim/kvm"
-I0908 13:46:44.317346  211403 handler.go:95] "Registered client" name="github.com.ihcsim/kvm"
-I0908 13:46:44.318228  211403 manager.go:238] "Device plugin connected" resourceName="github.com.ihcsim/kvm"
-# ...
+I1031 18:55:45.367492   26662 server.go:144] "Got registration request from device plugin with resource" resourceName="github.com.ihcsim/kvm"
+I1031 18:55:45.367538   26662 handler.go:94] "Registered client" name="github.com.ihcsim/kvm"
+# <snipped>
+I1031 18:55:45.368646   26662 manager.go:229] "Device plugin connected" resourceName="github.com.ihcsim/kvm"
+# <snipped>
+I1031 18:55:55.375313   26662 client.go:91] "State pushed for device plugin" resource="github.com.ihcsim/kvm" resourceCapacity=1
+I1031 18:55:55.382659   26662 manager.go:278] "Processed device updates for resource" resourceName="github.com.ihcsim/kvm" totalCount=1 healthyCount=1
+# <snipped>
 ```
-
 
 Deploy the provided busybox pod to the kubelet as a static pod:
 
@@ -80,27 +74,21 @@ Deploy the provided busybox pod to the kubelet as a static pod:
 make deploy
 ```
 
-The kubelet logs shows that 2 `github.com.ihcsim/crand` device is allocated to 
-the `busybox-crand` pod and 1 `github.com.ihcsim/kvm` device is allocated to the
-`busybox-kvm` pod:
+The kubelet logs shows that 1 `github.com.ihcsim/kvm` device is allocated to the
+`kvm` pod:
 
 ```sh
-I0908 13:52:08.084307  211403 config.go:397] "Receiving a new pod" pod="default/busybox-crand-localhost"
-I0908 13:52:08.084353  211403 kubelet.go:2407] "SyncLoop ADD" source="file" pods=["default/busybox-crand-localhost"]
-I0908 13:52:08.084371  211403 manager.go:836] "Looking for needed resources" needed=2 resourceName="github.com.ihcsim/crand"
-I0908 13:52:08.084384  211403 manager.go:560] "Pods to be removed" podUIDs=["a9dc80a0d8f74cefb3be144bbfc1b898"]
-I0908 13:52:08.084393  211403 manager.go:601] "Need devices to allocate for pod" deviceNumber=2 resourceName="github.com.ihcsim/crand" podUID="8b5e7c6badf1ce0c12118bdb12ce9a8c" containerName="busybox"
-I0908 13:52:08.084404  211403 manager.go:1014] "Plugin options indicate to skip GetPreferredAllocation for resource" resourceName="github.com.ihcsim/crand"
-I0908 13:52:08.084409  211403 file.go:201] "Reading config file" path="/home/isim/workspace/kubelet-plugin/kubelet/run/pods/busybox-kvm.yaml"
-I0908 13:52:08.084415  211403 manager.go:882] "Making allocation request for device plugin" devices=["crand1","crand0"] resourceName="github.com.ihcsim/crand"
-# ...
-I0908 13:54:14.259136  211403 config.go:397] "Receiving a new pod" pod="default/busybox-kvm-localhost"
-I0908 13:54:14.259192  211403 kubelet.go:2407] "SyncLoop ADD" source="file" pods=["default/busybox-kvm-localhost"]
-I0908 13:54:14.259236  211403 manager.go:836] "Looking for needed resources" needed=1 resourceName="github.com.ihcsim/kvm"
-I0908 13:54:14.259350  211403 manager.go:601] "Need devices to allocate for pod" deviceNumber=1 resourceName="github.com.ihcsim/kvm" podUID="79afb85449be9e045489922c8d983fe8" containerName="busybox"
-I0908 13:54:14.259386  211403 manager.go:1014] "Plugin options indicate to skip GetPreferredAllocation for resource" resourceName="github.com.ihcsim/kvm"
-I0908 13:54:14.259425  211403 manager.go:882] "Making allocation request for device plugin" devices=["github.com.ihcsim/kvm"] resourceName="github.com.ihcsim/kvm"
-# ...
+I1031 19:02:33.075112   26662 config.go:398] "Receiving a new pod" pod="default/kvm-gmj4p"
+I1031 19:02:33.075416   26662 kubelet.go:2397] "SyncLoop ADD" source="api" pods=["default/kvm-gmj4p"]
+I1031 19:02:33.075494   26662 topology_manager.go:215] "Topology Admit Handler" podUID="04e9733e-cf7a-4707-8c0c-b1e0c615f788" podNamespace="default" podName="kvm-gmj4p"
+I1031 19:02:33.075513   26662 manager.go:813] "Looking for needed resources" needed=1 resourceName="github.com.ihcsim/kvm"
+I1031 19:02:33.075531   26662 config.go:105] "Looking for sources, have seen" sources=["api","file"] seenSources={"api":{},"file":{}}
+I1031 19:02:33.075550   26662 manager.go:539] "Pods to be removed" podUIDs=["8dcd3f1b-b257-4335-8de6-c7491b7384ae"]
+I1031 19:02:33.075557   26662 config.go:105] "Looking for sources, have seen" sources=["api","file"] seenSources={"api":{},"file":{}}
+I1031 19:02:33.075565   26662 manager.go:580] "Need devices to allocate for pod" deviceNumber=1 resourceName="github.com.ihcsim/kvm" podUID="04e9733e-cf7a-4707-8c0c-b1e0c615f788" containerName="busybox"
+I1031 19:02:33.075581   26662 manager.go:991] "Plugin options indicate to skip GetPreferredAllocation for resource" resourceName="github.com.ihcsim/kvm"
+I1031 19:02:33.075591   26662 manager.go:859] "Making allocation request for device plugin" devices=["github.com.ihcsim/kvm"] resourceName="github.com.ihcsim/kvm"
+# <snipped>
 ```
 
 With the `ResourceHealthStatus` feature gate enabled, the kubelet also reports 

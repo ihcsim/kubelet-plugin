@@ -53,10 +53,10 @@ cdi:
 .PHONY: deploy
 deploy:
 	mkdir -p kubelet/run/{pods,logs}
-	cp yaml/busybox-*.yaml kubelet/run/pods
+	cp yaml/kvm.yaml kubelet/run/pods
 
 undeploy:
-	rm kubelet/run/pods/*.yaml
+	rm kubelet/run/pods/kvm.yaml
 
 cdi.tar.gz:
 	tar -czvf cdi.tar.gz cdi
