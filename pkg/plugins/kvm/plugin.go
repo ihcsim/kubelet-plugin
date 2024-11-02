@@ -13,7 +13,8 @@ import (
 
 const (
 	socketName   = "kvm.sock"
-	resourceName = "kvm-dev"
+	resourceName = "github.com.ihcsim/kvm"
+	deviceID     = "kvm0"
 )
 
 var (
@@ -33,6 +34,7 @@ func NewPlugin(log *zerolog.Logger) *DevicePlugin {
 		server: server,
 		log:    log,
 	}
+	v1beta1.RegisterDevicePluginServer(server.GRPC, plugin)
 
 	plugin.log.Info().Msg("plugin initialized")
 	return plugin
@@ -64,7 +66,6 @@ func (p *DevicePlugin) Run(ctx context.Context) error {
 	}
 	p.log.Info().Str("addr", socketPath).Msg("grpc server ready")
 
-	v1beta1.RegisterDevicePluginServer(p.server.GRPC, p)
 	kubeletAddr := fmt.Sprintf("unix://%s", v1beta1.KubeletSocket)
 	if err := plugins.RegisterWithKubelet(ctx, socketName, resourceName, kubeletAddr); err != nil {
 		return err

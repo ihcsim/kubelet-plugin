@@ -9,7 +9,7 @@ import (
 )
 
 func (p *DevicePlugin) discoverDevices() (bool, error) {
-	id := resourceName
+	id := deviceID
 	device := &plugins.Device{
 		ID:     id,
 		Health: plugins.Healthy,
