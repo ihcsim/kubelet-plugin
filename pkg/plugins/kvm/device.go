@@ -7,7 +7,11 @@ import (
 	"k8s.io/kubelet/pkg/apis/deviceplugin/v1beta1"
 )
 
-const hostDevicePath = "/dev/kvm"
+const (
+	containerDevicePath = "/dev/kvm"
+	hostDevicePath      = "/dev/kvm"
+	devicePermissions   = "rw"
+)
 
 var watchIntervalDuration = 10 * time.Second
 
@@ -53,9 +57,18 @@ func (p *DevicePlugin) Allocate(ctx context.Context, r *v1beta1.AllocateRequest)
 		car := &v1beta1.ContainerAllocateResponse{}
 		for _, id := range allocateRequest.DevicesIDs {
 			p.log.Info().Str("name", id).Msg("allocating CDI device")
-			car.CDIDevices = append(car.CDIDevices, &v1beta1.CDIDevice{
-				Name: id,
-			})
+			car.CDIDevices = []*v1beta1.CDIDevice{
+				{
+					Name: id,
+				},
+			}
+			car.Devices = []*v1beta1.DeviceSpec{
+				{
+					ContainerPath: containerDevicePath,
+					HostPath:      hostDevicePath,
+					Permissions:   devicePermissions,
+				},
+			}
 		}
 		resp.ContainerResponses = append(resp.ContainerResponses, car)
 	}

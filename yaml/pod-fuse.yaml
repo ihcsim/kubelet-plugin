@@ -1,0 +1,16 @@
+apiVersion: v1
+kind: Pod
+metadata:
+  generateName: fuse-
+  labels:
+    app.kubernetes.io/name: fuse
+spec:
+  containers:
+  - name: fuse
+    image: busybox
+    command:
+    - sleep
+    - infinity
+    resources:
+      limits:
+        squat.ai/fuse: 1

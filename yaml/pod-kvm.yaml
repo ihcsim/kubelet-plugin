@@ -5,7 +5,7 @@ metadata:
 spec:
   containers:
   - image: busybox
-    name: busybox
+    name: kvm-client
     command:
     - sleep
     - infinity

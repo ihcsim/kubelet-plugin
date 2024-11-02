@@ -1,7 +1,7 @@
 cdiVersion: 0.8.0
 kind: github.com.ihcsim/kvm
 devices:
-- name: kvm
+- name: kvm-dev
   containerEdits:
     env:
     - CDI_DEVICE_NAME=kvm
