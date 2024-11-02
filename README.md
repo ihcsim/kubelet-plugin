@@ -78,17 +78,15 @@ The kubelet logs shows that 1 `github.com.ihcsim/kvm` device is allocated to the
 `kvm` pod:
 
 ```sh
-I1031 19:02:33.075112   26662 config.go:398] "Receiving a new pod" pod="default/kvm-gmj4p"
-I1031 19:02:33.075416   26662 kubelet.go:2397] "SyncLoop ADD" source="api" pods=["default/kvm-gmj4p"]
-I1031 19:02:33.075494   26662 topology_manager.go:215] "Topology Admit Handler" podUID="04e9733e-cf7a-4707-8c0c-b1e0c615f788" podNamespace="default" podName="kvm-gmj4p"
-I1031 19:02:33.075513   26662 manager.go:813] "Looking for needed resources" needed=1 resourceName="github.com.ihcsim/kvm"
-I1031 19:02:33.075531   26662 config.go:105] "Looking for sources, have seen" sources=["api","file"] seenSources={"api":{},"file":{}}
-I1031 19:02:33.075550   26662 manager.go:539] "Pods to be removed" podUIDs=["8dcd3f1b-b257-4335-8de6-c7491b7384ae"]
-I1031 19:02:33.075557   26662 config.go:105] "Looking for sources, have seen" sources=["api","file"] seenSources={"api":{},"file":{}}
-I1031 19:02:33.075565   26662 manager.go:580] "Need devices to allocate for pod" deviceNumber=1 resourceName="github.com.ihcsim/kvm" podUID="04e9733e-cf7a-4707-8c0c-b1e0c615f788" containerName="busybox"
-I1031 19:02:33.075581   26662 manager.go:991] "Plugin options indicate to skip GetPreferredAllocation for resource" resourceName="github.com.ihcsim/kvm"
-I1031 19:02:33.075591   26662 manager.go:859] "Making allocation request for device plugin" devices=["github.com.ihcsim/kvm"] resourceName="github.com.ihcsim/kvm"
+I1102 20:33:21.794935    2195 config.go:398] "Receiving a new pod" pod="default/kvm-ncqxp"
 # <snipped>
+I1102 20:33:21.796150    2195 manager.go:580] "Need devices to allocate for pod" deviceNumber=1 resourceName="github.com.ihcsim/kvm" podUID="d2a6778a-f42d-4880-9ed8-ec5ec6ea6303" con 194569 tainerName="kvm-client"
+I1102 20:33:21.796167    2195 manager.go:991] "Plugin options indicate to skip GetPreferredAllocation for resource" resourceName="github.com.ihcsim/kvm"
+I1102 20:33:21.796176    2195 manager.go:859] "Making allocation request for device plugin" devices=["kvm0"] resourceName="github.com.ihcsim/kvm"
+# <snipped>
+I1102 20:44:05.754527   18375 manager.go:813] "Looking for needed resources" needed=1 resourceName="github.com.ihcsim/kvm"
+I1102 20:44:05.754530   18375 config.go:105] "Looking for sources, have seen" sources=["api","file"] seenSources={"file":{}}
+I1102 20:44:05.754536   18375 manager.go:555] "Found pre-allocated devices for resource on pod" resourceName="github.com.ihcsim/kvm" containerName="kvm-client" podUID="d2a6778a-f42d- 231430 4880-9ed8-ec5ec6ea6303" devices=["kvm0"]
 ```
 
 With the `ResourceHealthStatus` feature gate enabled, the kubelet also reports 
