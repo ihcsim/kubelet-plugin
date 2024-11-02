@@ -17,6 +17,11 @@ func main() {
 		log    = logger()
 		plugin = kvm.NewPlugin(log)
 	)
+	defer func() {
+		if err := plugin.Cleanup(); err != nil {
+			log.Error().Err(err).Msg("cleanup failed")
+		}
+	}()
 
 	ctx, cancel := context.WithCancel(context.Background())
 	defer cancel()

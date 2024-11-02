@@ -24,15 +24,6 @@ spec:
         effect: "NoExecute"
       - operator: "Exists"
         effect: "NoSchedule"
-      affinity:
-        nodeAffinity:
-          requiredDuringSchedulingIgnoredDuringExecution:
-            nodeSelectorTerms:
-            - matchExpressions:
-              - operator: In
-                key: node-role.kubernetes.io/master
-                values:
-                - "true"
       containers:
       - image: ko://github.com/ihcsim/kvm-device-plugin
         name: kvm-device-plugin
