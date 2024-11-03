@@ -12,7 +12,7 @@ import (
 )
 
 const (
-	socketName   = "kvm.sock"
+	socketName   = "github.com.ihcsim.kvm.sock"
 	resourceName = "github.com.ihcsim/kvm"
 	deviceID     = "kvm0"
 )
